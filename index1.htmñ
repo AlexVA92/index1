@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registros</title>
+</head>
+<body>
+    <h1>Registros</h1>
+    
+    <form id="dataForm">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+        <button type="submit" id="addBtn">Agregar</button>
+    </form>
+
+    <div id="dataList">
+        <h2>Registros:</h2>
+        <ul id="records"></ul>
+    </div>
+
+    <script>
+        const form = document.getElementById('dataForm');
+        const dataList = document.getElementById('records');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            const data = {
+                name: name,
+                email: email
+            };
+
+            let records = JSON.parse(localStorage.getItem('records')) || [];
+            records.push(data);
+            localStorage.setItem('records', JSON.stringify(records));
+
+            displayRecords();
+        });
+
+        function displayRecords() {
+            dataList.innerHTML = '';
+            const records = JSON.parse(localStorage.getItem('records')) || [];
+
+            records.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `Nombre: ${item.name}, Email: ${item.email} 
+                    <button onclick="editRecord(${index})">Editar</button>
+                    <button onclick="deleteRecord(${index})">Eliminar</button>`;
+                dataList.appendChild(li);
+            });
+        }
+
+        function editRecord(index) {
+            let records = JSON.parse(localStorage.getItem('records')) || [];
+            const { name, email } = records[index];
+            const newName = prompt('Ingrese el nuevo nombre:', name);
+            const newEmail = prompt('Ingrese el nuevo email:', email);
+
+            records[index] = { name: newName, email: newEmail };
+            localStorage.setItem('records', JSON.stringify(records));
+            displayRecords();
+        }
+
+        function deleteRecord(index) {
+            let records = JSON.parse(localStorage.getItem('records')) || [];
+            records.splice(index, 1);
+            localStorage.setItem('records', JSON.stringify(records));
+            displayRecords();
+        }
+
+        displayRecords();
+    </script>
+</body>
+</html>
